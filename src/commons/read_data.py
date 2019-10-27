@@ -3,14 +3,11 @@ author: hehaoming
 time: 2019/10/27 21:00
 """
 import os
-import pandas as pd
+
 import numpy as np
 import logging
 
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%M-%Y %H:%M:%S", level=logging.DEBUG)
-
-pd.set_option('display.float_format', lambda x: '%.2f' % x)  # 为了直观的显示数字，不采用科学计数法
-pd.options.display.max_rows = 200  # 最多显示200行
 
 DATA_PATH = "../../resource/data/ex4Data"
 X_PATH = "ex4x.dat"
