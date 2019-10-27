@@ -36,4 +36,5 @@ def read_data_from_resource():
     return np.array(train_data, dtype=np.float), np.array(train_labels, dtype=np.int)
 
 
-logging.debug("%s %s", *read_data_from_resource())
+if __name__ == "__main__":
+    logging.debug("%s %s", *read_data_from_resource())
