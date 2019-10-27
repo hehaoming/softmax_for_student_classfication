@@ -27,11 +27,11 @@ def read_data_from_resource():
     train_labels = []
     for index, line in enumerate(open(os.path.join(DATA_PATH, Y_PATH), 'r')):
         item = line.split(" ")
-        logging.debug("%d %s", index, item[3])
+        logging.debug("%d %s", index, int(float(item[3])))
         train_labels.append(int(float(item[3])))
     logging.debug("%s %s", "train_labels", train_labels)
     return np.array(train_data, dtype=np.float), np.array(train_labels, dtype=np.int)
 
 
 if __name__ == "__main__":
-    logging.debug("%s %s", *read_data_from_resource())
+    logging.debug("\n%s\n%s", *read_data_from_resource())
