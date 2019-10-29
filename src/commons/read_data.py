@@ -6,12 +6,12 @@ import os
 import numpy as np
 import logging
 
-logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%M-%Y %H:%M:%S", level=logging.DEBUG)
+logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%M-%Y %H:%M:%S", level=logging.WARNING)
 
-DATA_PATH = "../../resource/data/data"
+DATA_PATH = "./resource"
 
 
-def read_data_from_resource(dataset):
+def read_data_from_resource(dataset="dataset1"):
     """读取数据集数据
     Args: dataset is a string, dataset = "dataset1" or "dataset2"
     输入"dataset1"得到第一个数据集的数据，输入"dataset2"得到第二个数据集数据
