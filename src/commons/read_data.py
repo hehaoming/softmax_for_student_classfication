@@ -1,3 +1,4 @@
+# coding=utf-8
 """读取数据集数据
 author: hehaoming
 time: 2019/10/27 21:00
@@ -6,9 +7,9 @@ import os
 import numpy as np
 import logging
 
-logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%M-%Y %H:%M:%S", level=logging.WARNING)
+logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%M-%Y %H:%M:%S", level=logging.DEBUG)
 
-DATA_PATH = "./resource"
+DATA_PATH = "../../resource/data"
 
 
 def read_data_from_resource(dataset="dataset1"):
