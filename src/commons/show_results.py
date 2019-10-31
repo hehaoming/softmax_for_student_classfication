@@ -7,7 +7,8 @@ from matplotlib import animation
 import read_data
 
 
-def show_result(train_data, train_labels, error_list, theta_list, iterator):  # 迭代次数iterator从1开始计数
+def show_result(train_data, train_labels, error_list, theta_list, iterator):
+    """迭代次数iterator从1开始计数， 但error_list和theta_list下标从0开始"""
     # 数据预处理
     train_data_zeros = train_data[train_labels == 0]
     train_data_ones = train_data[train_labels == 1]
