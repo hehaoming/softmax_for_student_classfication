@@ -38,7 +38,7 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
     ax[1].set_title("Error Variety")
     ax[1].set_xlabel("Iteration")
     ax[1].set_ylabel("Mean Error")
-    ax[1].set_ylim(0, error_list[0] * 1.2)
+    ax[1].set_ylim(0, max(error_list) * 1.1)
     ax[1].set_xlim(0, 10)
     error_line, = ax[1].plot([], [], 'ro', markersize=2)
 
