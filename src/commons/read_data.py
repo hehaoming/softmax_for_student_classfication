@@ -37,7 +37,7 @@ def read_data_from_resource(dataset="dataset1"):
     for index, line in enumerate(open(os.path.join(DATA_PATH, x_path), 'r')):
         item = line.replace("\n", "").split(" ")
         logging.debug("%d %s %s", index, float(item[x1_index]), float(item[x2_index]))
-        train_data.append([float(item[x1_index]), float(item[x2_index])])
+        train_data.append([float(1),float(item[x1_index]), float(item[x2_index])])
     logging.debug("%s %s", "train_data", train_data)
 
     # 读取训练标签
