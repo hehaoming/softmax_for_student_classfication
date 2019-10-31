@@ -21,8 +21,8 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
     fig.tight_layout(pad=4)
 
     # 直线分割图
-    ax[0].set_xlim(15 - 15 * 0.2, 65 + 65 * 0.2)
-    ax[0].set_ylim(40 - 40 * 0.2, 90 + 90 * 0.2)
+    ax[0].set_xlim(15 * 1.1, 65 * 1.1)
+    ax[0].set_ylim(40 * 1.1, 90 * 1.1)
     ax[0].set_yticks(np.linspace(40, 90, 11))
     ax[0].set_xticks(np.linspace(15, 65, 11))
     ax[0].set_title("Classify")
@@ -42,7 +42,7 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
     ax[1].set_xlim(0, 10)
     error_line, = ax[1].plot([], [], 'ro', markersize=2)
 
-    def init():  # only required for blitting to give a clean slate.
+    def init():
         line.set_ydata([np.nan] * len(x))
         error_line.set_ydata([np.nan] * len(error_x))
         return error_line, line
@@ -50,8 +50,9 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
     def animate(i):
         # 更新error_line
         xmin, xmax = ax[1].get_xlim()
-        if i >= xmax - 2:
-            ax[1].set_xlim(xmin, 2 * xmax)
+        if i >= xmax - 5:
+            ax[1].set_xlim(int(xmin), xmax + 10)
+            ax[1].set_xticks(np.linspace(int(xmin), int(xmax) + 10, 11))
             ax[1].figure.canvas.draw()
         error.append(error_list[i])
         error_x.append(i)
@@ -65,7 +66,7 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
         return -(theta0 / theta2) - (theta1 / theta2) * x1
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False)
+        fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False, repeat=False)
     plt.show()
 
 show_result(read_data.read_data_from_resource()[0],
