@@ -7,7 +7,7 @@ from matplotlib import animation
 import read_data
 
 
-def show_result(train_data, train_labels, error_list, theta_list):
+def show_result(train_data, train_labels, error_list, theta_list, iterator):  # 迭代次数iterator从1开始计数
     # 数据预处理
     train_data_zeros = train_data[train_labels == 0]
     train_data_ones = train_data[train_labels == 1]
@@ -59,18 +59,7 @@ def show_result(train_data, train_labels, error_list, theta_list):
         return (-theta0 / theta2) - (theta1 / theta2) * x1
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=5, init_func=init, interval=1000, blit=False)
-
-    # To save the animation, use e.g.
-    #
-    # ani.save("movie.mp4")
-    #
-    # or
-    #
-    # from matplotlib.animation import FFMpegWriter
-    # writer = FFMpegWriter(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-    # ani.save("movie.mp4", writer=writer)
-
+        fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False)
     plt.show()
 
 
