@@ -39,7 +39,7 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
     ax[1].set_xlabel("Iteration")
     ax[1].set_ylabel("Mean Error")
     ax[1].set_ylim(0, error_list[0] * 1.2)
-    ax[1].set_xlim(0, 5)
+    ax[1].set_xlim(0, 10)
     error_line, = ax[1].plot([], [], 'ro', markersize=2)
 
     def init():  # only required for blitting to give a clean slate.
@@ -68,16 +68,16 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
         fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False)
     plt.show()
 
-# show_result(read_data.read_data_from_resource()[0],
-#             read_data.read_data_from_resource()[1],
-#             [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
-#             [[-190, 3, 2],
-#              [-200, 4, 3],
-#              [-190, 3, 2],
-#              [-200, 4, 3],
-#              [-190, 3, 2],
-#              [-200, 4, 3],
-#              [-200, 4, 3],
-#              [-190, 3, 2],
-#              [-200, 4, 3],
-#             ], 8)
+show_result(read_data.read_data_from_resource()[0],
+            read_data.read_data_from_resource()[1],
+            [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+            [[-190, 3, 2],
+             [-200, 4, 3],
+             [-190, 3, 2],
+             [-200, 4, 3],
+             [-190, 3, 2],
+             [-200, 4, 3],
+             [-200, 4, 3],
+             [-190, 3, 2],
+             [-200, 4, 3],
+            ], 8)
