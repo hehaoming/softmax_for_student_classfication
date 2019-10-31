@@ -9,7 +9,7 @@ import read_data
 
 
 def show_result(train_data, train_labels, error_list, theta_list, iterator):
-    """迭代次数iterator从1开始计数， 但error_list和theta_list下标从0开始"""
+    """迭代次数iterator从0（即对应初始状态的参数和损失）开始计数， error_list和theta_list下标从0开始"""
     # 数据预处理
     train_data_zeros = train_data[train_labels == 0]
     train_data_ones = train_data[train_labels == 1]
@@ -68,6 +68,7 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
     ani = animation.FuncAnimation(
         fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False, repeat=False)
     plt.show()
+
 
 show_result(read_data.read_data_from_resource()[0],
             read_data.read_data_from_resource()[1],
