@@ -1,6 +1,7 @@
 # coding=utf-8
 import numpy as np
 import matplotlib
+
 matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 from matplotlib import animation
@@ -61,12 +62,11 @@ def show_result(train_data, train_labels, error_list, theta_list, iterator):
         return error_line, line
 
     def f(theta0, theta1, theta2, x1):
-        return (-theta0 / theta2) - (theta1 / theta2) * x1
+        return -(theta0 / theta2) - (theta1 / theta2) * x1
 
     ani = animation.FuncAnimation(
         fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False)
     plt.show()
-
 
 # show_result(read_data.read_data_from_resource()[0],
 #             read_data.read_data_from_resource()[1],
