@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import read_data as rd
 
-
+# train_data传入你处理后的数据
 def show_binary_result(train_data, train_labels, error_list, theta_list, iterator):
     """迭代次数iterator从0（即对应初始状态的参数和损失）开始计数， error_list和theta_list下标从0开始"""
     # 数据预处理
