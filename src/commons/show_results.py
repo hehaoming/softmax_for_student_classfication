@@ -1,7 +1,7 @@
 # coding=utf-8
 """通过动画展示最终结果
-author: hehaoming
-time: 2019/10/29 21:00
+@author: hehaoming
+@time: 2019/10/29 21:00
 """
 import numpy as np
 import logging
