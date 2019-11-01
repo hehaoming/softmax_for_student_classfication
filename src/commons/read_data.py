@@ -6,8 +6,7 @@ time: 2019/10/27 21:00
 import os
 import numpy as np
 import logging
-
-logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%M-%Y %H:%M:%S", level=logging.DEBUG)
+logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%M-%Y %H:%M:%S", level=logging.WARNING)
 
 DATA_PATH = "../../resource/data"
 
@@ -52,4 +51,4 @@ def read_data_from_resource(dataset="dataset1"):
 
 
 if __name__ == "__main__":
-    logging.debug("\n%s\n%s", *read_data_from_resource("dataset1"))
+    logging.debug("\n%s\n%s", *read_data_from_resource("dataset2"))
