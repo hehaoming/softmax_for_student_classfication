@@ -1,9 +1,32 @@
 import numpy as np
 import unittest
-from softmax_regression.softmax_regression_with_SGD import one_in_k_encoding, softmax, SoftmaxClassifier, numerical_grad_check
+from softmax_regression.softmax_regression_with_SGD import one_in_k_encoding, softmax, SoftmaxClassifier
 
 
 class SoftTest(unittest.TestCase):
+    @staticmethod
+    def numerical_grad_check(f, x):
+        """ Numerical Gradient Checker """
+        eps = 1e-6
+        h = 1e-4
+        # d = x.shape[0]
+        cost, grad = f(x)
+        it = np.nditer(x, flags=['multi_index'])
+        while not it.finished:
+            dim = it.multi_index
+            tmp = x[dim]
+            x[dim] = tmp + h
+            cplus, _ = f(x)
+            x[dim] = tmp - h
+            cminus, _ = f(x)
+            x[dim] = tmp
+            num_grad = (cplus - cminus) / (2 * h)
+            print('grad, num_grad, grad-num_grad', grad[dim], num_grad, grad[dim] - num_grad)
+            assert np.abs(num_grad - grad[
+                dim]) < eps, 'numerical gradient error index {0}, numerical gradient {1}, computed gradient {2}'.format(
+                dim, num_grad, grad[dim])
+            it.iternext()
+
     @staticmethod
     def test_encoding():
         print('*' * 10, 'test encoding')
@@ -42,12 +65,12 @@ class SoftTest(unittest.TestCase):
         print('Test Success')
 
     @staticmethod
-    def test_grad():
+    def test_grad(self):
         print('*' * 5, 'Testing  Gradient')
         X = np.array([[1.0, 0.0], [1.0, 1.0], [1.0, -1.0]])
         w = np.ones((2, 3))
         y = np.array([0, 1, 2])
         scl = SoftmaxClassifier(num_classes=3)
         f = lambda z: scl.cost_grad(X, y, W=z)
-        numerical_grad_check(f, w)
+        self.numerical_grad_check(f, w)
         print('Test Success')

@@ -5,15 +5,13 @@
 """
 import numpy as np
 import logging
-
-logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%M-%Y %H:%M:%S",
-                    level=logging.DEBUG)
 import matplotlib
 
 matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 from matplotlib import animation
 import read_data as rd
+
 
 # train_data传入你处理后的数据
 def show_binary_result(train_data, train_labels, error_list, theta_list, iterator):
