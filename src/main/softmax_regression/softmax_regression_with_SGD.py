@@ -7,7 +7,7 @@ import numpy as np
 import logging
 from commons.read_data import read_data_from_resource
 import utils
-
+from commons.show_results import show_multi_result
 
 class SoftmaxClassifier:
     def __init__(self, num_classes):
@@ -48,8 +48,8 @@ class SoftmaxClassifier:
                 w = w - lr * self.cost_and_grad(np.array([x[index] for index in p[batch_size * j: batch_size * (j + 1)]]),
                                                 np.array([y[index] for index in p[batch_size * j: batch_size * (j + 1)]]),
                                                 w)[1]
-                self.w_list.append(w)
-                self.cost_list.append(self.cost_and_grad(x, y, w, False)[0])
+            self.w_list.append(w)
+            self.cost_list.append(self.cost_and_grad(x, y, w, False)[0])
         self.w = w
 
     def score(self, x, y):
@@ -63,7 +63,12 @@ class SoftmaxClassifier:
 
 
 if __name__ == "__main__":
+    eopch = 1000
+    num_class = 3
     softmaxClassifier = SoftmaxClassifier(3)
     data = read_data_from_resource("dataset2")
-    softmaxClassifier.fit(data[0], data[1], lr=0.01, epochs=1000, batch_size=1)
-    print(softmaxClassifier.score(data[0], data[1]))
+    softmaxClassifier.fit(data[0], data[1], lr=0.01, epochs=eopch, batch_size=1)
+    # print(softmaxClassifier.score(data[0], data[1]))
+    print(softmaxClassifier.cost_list)
+    print(softmaxClassifier.w_list)
+    show_multi_result(data[0], data[1], softmaxClassifier.cost_list, softmaxClassifier.w_list, eopch, 3)

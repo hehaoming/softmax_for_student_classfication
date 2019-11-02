@@ -11,6 +11,7 @@ matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 from matplotlib import animation
 import read_data as rd
+from scipy.special import comb
 
 
 # train_data传入你处理后的数据
@@ -75,21 +76,25 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
         if theta_list[frame][2] != 0:
             y_data = f(theta_list[frame][0], theta_list[frame][1], theta_list[frame][2], x)
             x_data = x
-        else:
+        elif theta_list[frame][1] != 0:
             y_data = np.array([min(train_data[:, 2]), max(train_data[:, 2])])
             certain_value = - theta_list[frame][0] / theta_list[frame][1]
             x_data = np.array([certain_value, certain_value])
+        else:
+            x_data = x
+            y_data = [np.nan] * len(x)
         logging.debug("y_data: %s %s", str(x_data), str(y_data))
         return x_data, y_data
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False, repeat=False)
+        fig, animate, frames=iterator - 1, init_func=init, interval=1, blit=False, repeat=False)
     plt.show()
 
 
-def show_multi_result(train_data, train_labels, error_list, theta_list, iterator):
+def show_multi_result(train_data, train_labels, error_list, theta_list, iterator, num_class):
     """
     迭代次数iterator从0（即对应初始状态的参数和损失）开始计数， error_list为一维向量，theta为三维矩阵
+    num_class为类别数
     """
     # 数据预处理
     train_data_zeros = train_data[train_labels == 0]
@@ -97,7 +102,8 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
     train_data_twos = train_data[train_labels == 2]
     error = []
     error_x = []
-
+    line_num = comb(num_class, 2)
+    print(line_num)
     # 画布
     fig, ax = plt.subplots(1, 2, figsize=(10, 5))
     fig.tight_layout(pad=4)
@@ -114,9 +120,9 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
 
     x = np.linspace(min(train_data[:, 1]), max(train_data[:, 1]), 11)
     print(x)
-    line1, = ax[0].plot(x, [np.nan] * len(x))
-    line2, = ax[0].plot(x, [np.nan] * len(x))
-    line3, = ax[0].plot(x, [np.nan] * len(x))
+    line = []
+    for i in range(int(line_num)):
+        line.append(ax[0].plot(x, [np.nan] * len(x))[0])
 
     # 误差变化图
     ax[1].set_title("Error Variety")
@@ -127,11 +133,10 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
     error_line, = ax[1].plot([], [], 'ro', markersize=2)
 
     def init():
-        line1.set_ydata([np.nan] * len(x))
-        line2.set_ydata([np.nan] * len(x))
-        line3.set_ydata([np.nan] * len(x))
+        for a_line in line:
+            a_line.set_ydata([np.nan] * len(x))
         error_line.set_ydata([np.nan] * len(error_x))
-        return error_line, line1, line2, line3
+        return error_line, line
 
     def animate(i):
         # 更新error_line
@@ -143,29 +148,39 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
         error.append(error_list[i])
         error_x.append(i)
         error_line.set_data(error_x, error)
-
+        new_theta = []
+        # 计算theta
+        for first_class in range(num_class - 1):
+            for second_class in range(first_class + 1, num_class):
+                theta0 = theta_list[i][0][first_class] - theta_list[i][0][second_class]
+                theta1 = theta_list[i][1][first_class] - theta_list[i][1][second_class]
+                theta2 = theta_list[i][2][first_class] - theta_list[i][2][second_class]
+                new_theta.append([theta0, theta1, theta2])
+        print("*******", new_theta)
         # 更新分割直线
-        line1.set_data(*draw_line(i, 0))
-        line2.set_data(*draw_line(i, 1))
-        line3.set_data(*draw_line(i, 2))
-        return error_line, line1, line2, line3
+        for k, a_line in enumerate(line):
+            a_line.set_data(*draw_line(new_theta[k], k))
+        return error_line, line
 
-    def f(theta0, theta1, theta2, x1):
+    def f(x1, theta0, theta1, theta2):
         return -(theta0 / theta2) - (theta1 / theta2) * x1
 
-    def draw_line(frame, index):
-        if theta_list[frame][index][2] != 0:
-            y_data = f(theta_list[frame][index][0], theta_list[frame][index][1], theta_list[frame][index][2], x)
+    def draw_line(theta, index):
+        if theta[2] != 0:
+            y_data = f(x, theta[0], theta[1], theta[2])
             x_data = x
-        else:
+        elif theta[1] != 0:
             y_data = np.array([min(train_data[:, 2]), max(train_data[:, 2])])
-            certain_value = - theta_list[frame][index][0] / theta_list[frame][index][1]
+            certain_value = - theta[0] / theta[1]
             x_data = np.array([certain_value, certain_value])
+        else:
+            x_data = x
+            y_data = [np.nan] * len(x)
         logging.debug("y_data%d: %s %s", index, str(x_data), str(y_data))
         return x_data, y_data
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False, repeat=False)
+        fig, animate, frames=iterator - 1, init_func=init, interval=1, blit=False, repeat=False)
     plt.show()
 
 
@@ -175,14 +190,14 @@ def test_show_multi_result():
                       [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
                       [[[-1 / 7, -2, 4.5],
                         [-3, 1, 0],
-                        [-0.2, 0.5, 5]],
+                        [-3, 1, 0]],
                        [[-1, -1, 1.8],
                         [-0, 1.1, 0],
-                        [-0.1, -0.5, 6]],
+                        [-3, 1, 0]],
                        [[-1, -1, 1.7],
-                        [-0, -1.2, 2],
-                        [-0.3, 0.1, 0]]
-                       ], 4)
+                        [-0, -1.2, 0],
+                        [-2, 1, 0]]
+                       ], 4, 3)
 
 
 if __name__ == "__main__":
