@@ -65,7 +65,7 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
         error_line.set_data(error_x, error)
 
         # 更新分割直线
-        line.set_ydata(*draw_line(i))
+        line.set_data(*draw_line(i))
         return error_line, line
 
     def f(theta0, theta1, theta2, x1):
