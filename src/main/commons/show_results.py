@@ -67,13 +67,22 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
         error_line.set_data(error_x, error)
 
         # 更新分割直线
-        y_data = f(theta_list[i][0], theta_list[i][1], theta_list[i][2], x)
-        logging.debug("y_data: %s", str(y_data))
-        line.set_ydata(y_data)
+        line.set_ydata(*draw_line(i))
         return error_line, line
 
     def f(theta0, theta1, theta2, x1):
         return -(theta0 / theta2) - (theta1 / theta2) * x1
+
+    def draw_line(frame):
+        if theta_list[frame][2] != 0:
+            y_data = f(theta_list[frame][0], theta_list[frame][1], theta_list[frame][2], x)
+            x_data = x
+        else:
+            y_data = np.array([min(train_data[:, 2]), max(train_data[:, 2])])
+            certain_value = - theta_list[frame][0] / theta_list[frame][1]
+            x_data = np.array([certain_value, certain_value])
+        logging.debug("y_data: %s %s", str(x_data), str(y_data))
+        return x_data, y_data
 
     ani = animation.FuncAnimation(
         fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False, repeat=False)
@@ -138,36 +147,43 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
         error_line.set_data(error_x, error)
 
         # 更新分割直线
-        y_data1 = f(theta_list[i][0][0], theta_list[i][0][1], theta_list[i][0][2], x)
-        logging.debug("y_data1: %s", str(y_data1))
-        line1.set_ydata(y_data1)
-        y_data2 = f(theta_list[i][1][0], theta_list[i][1][1], theta_list[i][1][2], x)
-        logging.debug("y_data2: %s", str(y_data2))
-        line2.set_ydata(y_data2)
-        y_data3 = f(theta_list[i][1][0], theta_list[i][1][1], theta_list[i][1][2], x)
-        logging.debug("y_data3: %s", str(y_data3))
-        line3.set_ydata(y_data3)
+        line1.set_data(*draw_line(i, 0))
+        line2.set_data(*draw_line(i, 1))
+        line3.set_data(*draw_line(i, 2))
         return error_line, line1, line2, line3
 
     def f(theta0, theta1, theta2, x1):
         return -(theta0 / theta2) - (theta1 / theta2) * x1
+
+    def draw_line(frame, index):
+        if theta_list[frame][index][2] != 0:
+            y_data = f(theta_list[frame][index][0], theta_list[frame][index][1], theta_list[frame][index][2], x)
+            x_data = x
+        else:
+            y_data = np.array([min(train_data[:, 2]), max(train_data[:, 2])])
+            certain_value = - theta_list[frame][index][0] / theta_list[frame][index][1]
+            x_data = np.array([certain_value, certain_value])
+        logging.debug("y_data%d: %s %s", index, str(x_data), str(y_data))
+        return x_data, y_data
 
     ani = animation.FuncAnimation(
         fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False, repeat=False)
     plt.show()
 
 
-if __name__ == "__main__":
+def test_show_multi_result():
     show_multi_result(rd.read_data_from_resource("dataset2")[0],
                       rd.read_data_from_resource("dataset2")[1],
                       [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
                       [[[-1 / 7, -2, 4.5],
-                        [-0, -1, 2],
+                        [-3, 1, 0],
                         [-0.2, 0.5, 5]],
                        [[-1, -1, 1.8],
-                        [-0, -1.1, 2],
+                        [-0, 1.1, 0],
                         [-0.1, -0.5, 6]],
                        [[-1, -1, 1.7],
                         [-0, -1.2, 2],
-                        [-0.1, -0.6, 7]]
+                        [-0.3, 0.1, 0]]
                        ], 4)
+
+test_show_multi_result()
