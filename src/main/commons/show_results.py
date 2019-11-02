@@ -186,4 +186,6 @@ def test_show_multi_result():
                         [-0.3, 0.1, 0]]
                        ], 4)
 
-test_show_multi_result()
+
+if __name__ == "__main__":
+    test_show_multi_result()
