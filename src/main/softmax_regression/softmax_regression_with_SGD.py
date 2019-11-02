@@ -65,5 +65,5 @@ class SoftmaxClassifier:
 if __name__ == "__main__":
     softmaxClassifier = SoftmaxClassifier(3)
     data = read_data_from_resource("dataset2")
-    softmaxClassifier.fit(data[0], data[1], lr=0.01, epochs=1000, batch_size=2)
+    softmaxClassifier.fit(data[0], data[1], lr=0.01, epochs=1000, batch_size=1)
     print(softmaxClassifier.score(data[0], data[1]))
