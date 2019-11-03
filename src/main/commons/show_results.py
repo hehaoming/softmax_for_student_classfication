@@ -5,13 +5,13 @@
 """
 import numpy as np
 import logging
+import read_data as rd
+from queue import Queue
 import matplotlib
 
 matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 from matplotlib import animation
-import read_data as rd
-from scipy.special import comb
 
 
 # train_data传入你处理后的数据
@@ -28,8 +28,12 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
     fig.tight_layout(pad=4)
 
     # 直线分割图
-    ax[0].set_xlim(min(train_data[:, 1]) * 1.1, max(train_data[:, 1]) * 1.1)
-    ax[0].set_ylim(min(train_data[:, 2]) * 1.1, max(train_data[:, 2]) * 1.1)
+    min_train1 = min(train_data[:, 1])
+    max_train1 = max(train_data[:, 1])
+    min_train2 = min(train_data[:, 2])
+    max_train2 = max(train_data[:, 2])
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
     # ax[0].set_yticks(np.linspace(40, 90, 11))
     # ax[0].set_xticks(np.linspace(15, 65, 11))
     ax[0].set_title("Classify")
@@ -37,7 +41,7 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
     ax[0].set_ylabel("Exam 2 Score")
     ax[0].plot(train_data_zeros[:, 1], train_data_zeros[:, 2], 'bo', markersize=2)
     ax[0].plot(train_data_ones[:, 1], train_data_ones[:, 2], 'r+', markersize=3)
-    x = np.linspace(min(train_data[:, 1]), max(train_data[:, 1]), 11)
+    x = np.linspace(min_train1 - 0.2 * abs(min_train1), max_train1 + 0.2 * abs(max_train1), 11)
     logging.debug(x)
     line, = ax[0].plot(x, [np.nan] * len(x))
 
@@ -91,7 +95,7 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
     plt.show()
 
 
-def show_multi_result(train_data, train_labels, error_list, theta_list, iterator, num_class):
+def show_softmax_binary_result(train_data, train_labels, error_list, theta_list, iterator):
     """
     迭代次数iterator从0（即对应初始状态的参数和损失）开始计数， error_list为一维向量，theta为三维矩阵
     num_class为类别数
@@ -102,15 +106,17 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
     train_data_twos = train_data[train_labels == 2]
     error = []
     error_x = []
-    line_num = comb(num_class, 2)
-    print(line_num)
     # 画布
     fig, ax = plt.subplots(1, 2, figsize=(10, 5))
     fig.tight_layout(pad=4)
 
     # 直线分割图
-    ax[0].set_xlim(min(train_data[:, 1]) * 1.1, max(train_data[:, 1]) * 1.1)
-    ax[0].set_ylim(min(train_data[:, 2]) * 1.1, max(train_data[:, 2]) * 1.1)
+    min_train1 = min(train_data[:, 1])
+    max_train1 = max(train_data[:, 1])
+    min_train2 = min(train_data[:, 2])
+    max_train2 = max(train_data[:, 2])
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
     ax[0].set_title("Classify")
     ax[0].set_xlabel("feature 1")
     ax[0].set_ylabel("feature 2 ")
@@ -118,11 +124,9 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
     ax[0].plot(train_data_ones[:, 1], train_data_ones[:, 2], 'r+', markersize=3)
     ax[0].plot(train_data_twos[:, 1], train_data_twos[:, 2], 'g^', markersize=3)
 
-    x = np.linspace(min(train_data[:, 1]), max(train_data[:, 1]), 11)
+    x = np.linspace(min_train1 - 0.2 * abs(min_train1), max_train1 + 0.2 * abs(max_train1), 11)
     print(x)
-    line = []
-    for i in range(int(line_num)):
-        line.append(ax[0].plot(x, [np.nan] * len(x))[0])
+    line1, = ax[0].plot(x, [np.nan] * len(x))
 
     # 误差变化图
     ax[1].set_title("Error Variety")
@@ -133,10 +137,9 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
     error_line, = ax[1].plot([], [], 'ro', markersize=2)
 
     def init():
-        for a_line in line:
-            a_line.set_ydata([np.nan] * len(x))
+        line1.set_ydata([np.nan] * len(x))
         error_line.set_ydata([np.nan] * len(error_x))
-        return error_line, line
+        return error_line, line1
 
     def animate(i):
         # 更新error_line
@@ -148,35 +151,30 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
         error.append(error_list[i])
         error_x.append(i)
         error_line.set_data(error_x, error)
-        new_theta = []
+
         # 计算theta
-        for first_class in range(num_class - 1):
-            for second_class in range(first_class + 1, num_class):
-                theta0 = theta_list[i][0][first_class] - theta_list[i][0][second_class]
-                theta1 = theta_list[i][1][first_class] - theta_list[i][1][second_class]
-                theta2 = theta_list[i][2][first_class] - theta_list[i][2][second_class]
-                new_theta.append([theta0, theta1, theta2])
-        print("*******", new_theta)
+        theta0 = theta_list[i][0][0] - theta_list[i][0][1]
+        theta1 = theta_list[i][1][0] - theta_list[i][1][1]
+        theta2 = theta_list[i][2][0] - theta_list[i][2][1]
         # 更新分割直线
-        for k, a_line in enumerate(line):
-            a_line.set_data(*draw_line(new_theta[k], k))
-        return error_line, line
+        line1.set_data(*draw_line(theta0, theta1, theta2))
+        return error_line, line1
 
     def f(x1, theta0, theta1, theta2):
         return -(theta0 / theta2) - (theta1 / theta2) * x1
 
-    def draw_line(theta, index):
-        if theta[2] != 0:
-            y_data = f(x, theta[0], theta[1], theta[2])
+    def draw_line(theta0, theta1, theta2):
+        if theta2 != 0:
+            y_data = f(x, theta0, theta1, theta2)
             x_data = x
-        elif theta[1] != 0:
+        elif theta1 != 0:
             y_data = np.array([min(train_data[:, 2]), max(train_data[:, 2])])
-            certain_value = - theta[0] / theta[1]
+            certain_value = - theta0 / theta1
             x_data = np.array([certain_value, certain_value])
         else:
             x_data = x
             y_data = [np.nan] * len(x)
-        logging.debug("y_data%d: %s %s", index, str(x_data), str(y_data))
+        logging.debug("y_data: %s %s", str(x_data), str(y_data))
         return x_data, y_data
 
     ani = animation.FuncAnimation(
@@ -184,20 +182,191 @@ def show_multi_result(train_data, train_labels, error_list, theta_list, iterator
     plt.show()
 
 
+def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, iterator):
+    """
+    迭代次数iterator从0（即对应初始状态的参数和损失）开始计数， error_list为一维向量，theta为三维矩阵
+    num_class为类别数
+    """
+    # 数据预处理
+    train_data_zeros = train_data[train_labels == 0]
+    train_data_ones = train_data[train_labels == 1]
+    train_data_twos = train_data[train_labels == 2]
+    error = []
+    error_x = []
+
+    # 预处理算好theta
+
+    # 画布
+    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+    fig.tight_layout(pad=4)
+
+    # 直线分割图
+    min_train1 = min(train_data[:, 1])
+    max_train1 = max(train_data[:, 1])
+    min_train2 = min(train_data[:, 2])
+    max_train2 = max(train_data[:, 2])
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
+    ax[0].set_title("Classify")
+    ax[0].set_xlabel("feature 1")
+    ax[0].set_ylabel("feature 2 ")
+    ax[0].plot(train_data_zeros[:, 1], train_data_zeros[:, 2], 'bo', markersize=2)
+    ax[0].plot(train_data_ones[:, 1], train_data_ones[:, 2], 'r+', markersize=3)
+    ax[0].plot(train_data_twos[:, 1], train_data_twos[:, 2], 'g^', markersize=3)
+    x = np.linspace(min_train1 - 0.2 * abs(min_train1), max_train1 + 0.2 * abs(max_train1), 101)
+
+    fill_color = ['b', 'r', 'g']
+    area_queue = Queue()
+    for i in range(3):
+        area_queue.put(ax[0].fill_between(x, [np.nan] * len(x), [np.nan] * len(x), color=fill_color[i], alpha=0.5))
+    # 误差变化图
+    ax[1].set_title("Error Variety")
+    ax[1].set_xlabel("Iteration")
+    ax[1].set_ylabel("Mean Error")
+    ax[1].set_ylim(0, max(error_list) * 1.1)
+    ax[1].set_xlim(0, 10)
+    error_line, = ax[1].plot([], [], 'ro', markersize=2)
+
+    def init():
+        for k in range(3):
+            a_area = area_queue.get()
+            a_area.remove()
+            area_queue.put(ax[0].fill_between(x, [np.nan] * len(x), [np.nan] * len(x), color=fill_color[k], alpha=0.5))
+        error_line.set_ydata([np.nan] * len(error_x))
+        return error_line, area_queue
+
+    def animate(i):
+        # 更新error_line
+        xmin, xmax = ax[1].get_xlim()
+        if i >= xmax - 5:
+            ax[1].set_xlim(int(xmin), xmax + 10)
+            ax[1].set_xticks(np.linspace(int(xmin), int(xmax) + 10, 11))
+            ax[1].figure.canvas.draw()
+        error.append(error_list[i])
+        error_x.append(i)
+        error_line.set_data(error_x, error)
+
+        # 计算theta
+        theta = []
+        for k in range(3):
+            area_line = []
+            for j in range(1, 3, 1):
+                theta0 = theta_list[i][0][k] - theta_list[i][0][(k + j) % 3]
+                theta1 = theta_list[i][1][k] - theta_list[i][1][(k + j) % 3]
+                theta2 = theta_list[i][2][k] - theta_list[i][2][(k + j) % 3]
+                area_line.append([theta0, theta1, theta2])
+            theta.append(area_line)
+        for k in range(3):
+            a_area = area_queue.get()
+            a_area.remove()
+            line0 = theta[k][0]
+            line1 = theta[k][1]
+            y_low = []
+            y_top = []
+            if line0[2] != 0. and line1[2] != 0.:
+                path0 = f(x, *line0)
+                path1 = f(x, *line1)
+                if line0[2] > 0. and line1[2] > 0.:
+                    for n in range(x.shape[0]):
+                        if path0[n] > path1[n]:
+                            y_low.append(path0[n])
+                        else:
+                            y_low.append(path1[n])
+                        y_top.append(np.exp(10))
+                elif line0[2] < 0. and line1[2] < 0.:
+                    for n in range(x.shape[0]):
+                        if path0[n] < path1[n]:
+                            y_top.append(path0[n])
+                        else:
+                            y_top.append(path1[n])
+                        y_low.append(-np.exp(10))
+                elif line0[2] > 0. and line1[2] < 0.:
+                    y_top = path1
+                    y_low = path0
+                elif line0[2] < 0. and line1[2] > 0.:
+                    y_top = path0
+                    y_low = path1
+                print(y_low)
+                print(y_top)
+                area_queue.put(
+                    ax[0].fill_between(x, y_low, y_top, where=(y_low < y_top), color=fill_color[k], alpha=0.5))
+            elif line0[2] != 0. or line1[2] != 0.:
+                if line0[2] != 0. and line1[2] == 0.:
+                    path0 = f(x, *line0)
+                    if line0[2] > 0:
+                        y_low = path0
+                        y_top = [np.exp(10)] * x.shape[0]
+                    if line0[2] < 0:
+                        y_low = [-np.exp(10)] * x.shape[0]
+                        y_top = path0
+                elif line0[2] == 0. and line1[2] != 0:
+                    path1 = f(x, *line1)
+                    if line1[2] > 0:
+                        y_low = path1
+                        y_top = [np.exp(10)] * x.shape[0]
+                    if line1[2] < 0:
+                        y_low = [-np.exp(10)] * x.shape[0]
+                        y_top = path1
+                new_y_top = []
+                new_y_low = []
+                new_x = []
+                for m in range(len(x)):
+                    if line1[1] * x[m] > -line1[0]:
+                        new_x.append(x[m])
+                        new_y_top.append(y_top[m])
+                        new_y_low.append(y_low[m])
+                area_queue.put(ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k], alpha=0.5))
+            elif line0[2] == 0. and line1[2] == 0:
+                y_low = [-np.exp(10)] * x.shape[0]
+                y_top = [np.exp(10)] * x.shape[0]
+                new_y_top = []
+                new_y_low = []
+                new_x = []
+                for m in range(len(x)):
+                    if line0[1] * x[m] + line0[0] > 0 and line1[1] * x[m] + line1[0] > 0:
+                        new_x.append(x[m])
+                        new_y_top.append(y_top[m])
+                        new_y_low.append(y_low[m])
+                area_queue.put(ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k], alpha=0.5))
+            print(i)
+        return error_line, area_queue
+
+    def f(x1, theta0, theta1, theta2):
+        return -(theta0 / theta2) - (theta1 / theta2) * x1
+
+    ani = animation.FuncAnimation(
+        fig, animate, frames=iterator - 1, init_func=init, interval=10, blit=False, repeat=False)
+    plt.show()
+
+
 def test_show_multi_result():
-    show_multi_result(rd.read_data_from_resource("dataset2")[0],
-                      rd.read_data_from_resource("dataset2")[1],
-                      [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
-                      [[[-1 / 7, -2, 4.5],
-                        [-3, 1, 0],
-                        [-3, 1, 0]],
-                       [[-1, -1, 1.8],
-                        [-0, 1.1, 0],
-                        [-3, 1, 0]],
-                       [[-1, -1, 1.7],
-                        [-0, -1.2, 0],
-                        [-2, 1, 0]]
-                       ], 4, 3)
+    show_softmax_multi_result(rd.read_data_from_resource("dataset2")[0],
+                              rd.read_data_from_resource("dataset2")[1],
+                              [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+                              [[[-1 / 7, -2, 4.5],
+                                [-3, 1, 0],
+                                [0, 0, 0]],
+                               [[-1, -1, 1.8],
+                                [-0, 1.1, 0],
+                                [0, 1, 0]],
+                               [[-1, -1, 1.7],
+                                [-0, -1.2, 0],
+                                [-2, 1, 0]]
+                               ], 4)
+
+    # show_softmax_binary_result(rd.read_data_from_resource("dataset1")[0],
+    #                   rd.read_data_from_resource("dataset1")[1],
+    #                   [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+    #                   [[[-1 / 7, -2],
+    #                     [-3, 1],
+    #                     [-3, 1]],
+    #                    [[-1, -1],
+    #                     [-0, 1.1],
+    #                     [-3, 1]],
+    #                    [[-1, -1],
+    #                     [-0, -1.2],
+    #                     [-2, 1]]
+    #                    ], 4)
 
 
 if __name__ == "__main__":

@@ -1,74 +1,65 @@
-"""多分类SGD
-@author: hehaoming
-@time: 2019/11/2 11:03
-"""
-
+# -*- coding: utf-8 -*-
 import numpy as np
-import logging
-from commons.read_data import read_data_from_resource
-import utils
-from commons.show_results import show_multi_result
+import matplotlib.pyplot as plt
+import read_data
+import show_results
 
-class SoftmaxClassifier:
-    def __init__(self, num_classes):
-        self.w = None
-        self.w_list = []
-        self.cost_list = []
-        self.num_classes = num_classes
+def oneHotIt(y):
+    K = 2
+    eyes_mat = np.eye(K)  # 按分类数生成对角线为1的单位阵
+    y_onehot = np.zeros((y.shape[0], K))  # 初始化y的onehot编码矩阵
+    for i in range(0, y.shape[0]):
+        y_onehot[i] = eyes_mat[y[i]]  # 根据每行y值，更新onehot编码矩阵
+    return y_onehot
 
-    def cost_and_grad(self, x, y, w, if_grad=True):
-        grad = np.zeros(w.shape) * np.nan
-        y_one_hot = utils.one_hot_encoding(y, self.num_classes)
-        front_f_x = np.dot(x, w)
-        y_hat = utils.softmax(front_f_x)
-        # 平均cost
+def softmax(z):
+    z -= np.max(z)
+    sm = (np.exp(z).T / np.sum(np.exp(z),axis=1)).T
+    return sm
 
-        cost = - 1 / len(y) * sum(sum(y_one_hot * np.log(y_hat)))
-        if if_grad:
-            # 平均梯度
-            grad = - 1 / len(y) * np.dot(x.transpose(), y_one_hot - y_hat)
-        return cost, grad
+def getLoss(w,x,y):
+    m = x.shape[0] #First we get the number of training examples
+    y_mat = oneHotIt(y) #Next we convert the integer class coding into a one-hot representation
+    scores = np.dot(x,w) #Then we compute raw class scores given our input and current weights
+    prob = softmax(scores) #Next we perform a softmax on these scores to get their probabilities
+    loss = (-1 / m) * np.sum(y_mat * np.log(prob)) #We then find the loss of the probabilities
+    grad = (-1 / m) * np.dot(x.T,(y_mat - prob)) #And compute the gradient for that loss
+    return loss,grad
 
-    def fit(self, x, y, w=None, lr=0.01, epochs=1000, batch_size=1):
-        if w is None:
-            # w = np.zeros((x.shape[1], self.num_classes))
-            # w = np.ones((x.shape[1], self.num_classes))
-            w = np.random.normal(0, 1, (x.shape[1], self.num_classes))
+def softmaxRegressionSGD(x, y, iterations):
+    w = np.zeros([x.shape[1], len(np.unique(y))])
+    learningRate = 1e-5
+    losses = []
+    thetaList = []
+    for i in range(iterations):
+        idx = np.arange(x.shape[0])
+        np.random.shuffle(idx)
+        losses_per_epoch = []
+        for id in idx :
+            xx = np.reshape(x[id], (1, x.shape[1]))
+            yy = np.reshape(y[id], (1))
+            loss, grad = getLoss(w, xx, yy)
+            losses_per_epoch.append(loss)
+            w = w - (learningRate * grad)
+        losses.append(np.mean(losses_per_epoch))
+        thetaList.append(w)
+    return w, losses, thetaList
 
-        # 记录初始状态
-        self.w_list.append(w)
-        self.cost_list.append(self.cost_and_grad(x, y, w, False)[0])
+def getProbsAndPreds(someX, w):
+    probs = softmax(np.dot(someX,w))
+    preds = np.argmax(probs,axis=1)
+    return probs,preds
 
-        # 迭代更新参数
-        for i in range(epochs):
-            logging.debug("epoch: %d", i)
-            # 随机化
-            p = np.random.permutation(range(len(y)))
-            for j in range(int(len(y) / batch_size + 0.5)):
-                w = w - lr * self.cost_and_grad(np.array([x[index] for index in p[batch_size * j: batch_size * (j + 1)]]),
-                                                np.array([y[index] for index in p[batch_size * j: batch_size * (j + 1)]]),
-                                                w)[1]
-            self.w_list.append(w)
-            self.cost_list.append(self.cost_and_grad(x, y, w, False)[0])
-        self.w = w
-
-    def score(self, x, y):
-        prediction = self.predict(x)
-        out = 1 / len(y) * sum([(prediction[i] == y[i]) for i in range(len(y))])
-        return out
-
-    def predict(self, x):
-        out = np.array([np.argmax(x) for x in utils.softmax(x.dot(self.w))])
-        return out
-
+def getAccuracy(someX, someY, w):
+    prob,prede = getProbsAndPreds(someX, w)
+    accuracy = sum(prede == someY)/(float(len(someY)))
+    return accuracy
 
 if __name__ == "__main__":
-    eopch = 1000
-    num_class = 3
-    softmaxClassifier = SoftmaxClassifier(3)
-    data = read_data_from_resource("dataset2")
-    softmaxClassifier.fit(data[0], data[1], lr=0.01, epochs=eopch, batch_size=1)
-    # print(softmaxClassifier.score(data[0], data[1]))
-    print(softmaxClassifier.cost_list)
-    print(softmaxClassifier.w_list)
-    show_multi_result(data[0], data[1], softmaxClassifier.cost_list, softmaxClassifier.w_list, eopch, 3)
+    x, y = read_data.read_data_from_resource()
+    w, losses, thetaList = softmaxRegressionSGD(x, y, 100000)
+    print('Training Accuracy: ', getAccuracy(x, y, w))
+    plt.plot(losses)
+    plt.legend()  # 将样例显示出来
+    plt.show()
+    #show_results.show_result(train_data=x, train_labels=y,error_list= losses,theta_list= thetaList, iterator=1000)
