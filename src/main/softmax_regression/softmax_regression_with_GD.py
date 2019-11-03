@@ -24,7 +24,7 @@ def one_hot_encoder(labels,m):
         coder[i, labels[i]] = 1
     return coder
 
-def softmax_gradient_descent(X, y, epochs=10000, learning_rate=0.01):
+def softmax_gradient_descent(X, y, epochs=1000, learning_rate=0.01):
     weight = np.random.normal(loc=0, scale=0.01, size=(X.shape[1], 2))
     cost_array = []
     weight_array=[]
@@ -81,4 +81,4 @@ print("weight大小：",np.shape(weight_array))
 show_multi_result(data,
                 label,
                 cost_array,
-                weight_array, 10000,2)
+                weight_array, 1000,2)
