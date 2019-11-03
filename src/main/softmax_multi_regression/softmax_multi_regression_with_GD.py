@@ -77,4 +77,4 @@ show_multi_result(data,
             label,
             cost_array,
             weight_array,
-            10000,3)
+            1000,3)
