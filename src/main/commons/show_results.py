@@ -178,7 +178,7 @@ def show_softmax_binary_result(train_data, train_labels, error_list, theta_list,
         return x_data, y_data
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=1, blit=False, repeat=False)
+        fig, animate, frames=iterator - 1, init_func=init, interval=0.1, blit=False, repeat=False)
     plt.show()
 
 
@@ -225,7 +225,7 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
     ax[1].set_ylabel("Mean Error")
     ax[1].set_ylim(0, max(error_list) * 1.1)
     ax[1].set_xlim(0, 10)
-    error_line, = ax[1].plot([], [], 'ro', markersize=2)
+    error_line, = ax[1].plot([], [], 'ro', markersize=1)
 
     def init():
         for k in range(3):
@@ -286,8 +286,6 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
                 elif line0[2] < 0. and line1[2] > 0.:
                     y_top = path0
                     y_low = path1
-                print(y_low)
-                print(y_top)
                 area_queue.put(
                     ax[0].fill_between(x, y_low, y_top, where=(y_low < y_top), color=fill_color[k], alpha=0.5))
             elif line0[2] != 0. or line1[2] != 0.:
@@ -328,14 +326,13 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
                         new_y_top.append(y_top[m])
                         new_y_low.append(y_low[m])
                 area_queue.put(ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k], alpha=0.5))
-            print(i)
         return error_line, area_queue
 
     def f(x1, theta0, theta1, theta2):
         return -(theta0 / theta2) - (theta1 / theta2) * x1
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=10, blit=False, repeat=False)
+        fig, animate, frames=iterator - 1, init_func=init, interval=0.1, blit=False, repeat=False)
     plt.show()
 
 
