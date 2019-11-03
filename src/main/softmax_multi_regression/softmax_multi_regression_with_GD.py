@@ -2,7 +2,7 @@ from read_data import read_data_from_resource
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from show_results import show_multi_result
+from show_results import show_softmax_multi_result
 
 def softmax(z):
     log_c = np.max(z, axis = 1) * (-1)
@@ -26,6 +26,8 @@ def compute_cost(X, y, weight):
 
 def softmax_gradient_descent(X, y, epochs=1000, learning_rate=0.01):
     weight = np.random.normal(loc=0, scale=0.01, size=(X.shape[1], 3))
+    # weight=np.ones((X.shape[1], 3))
+    # weight=np.zeros((X.shape[1], 3))
     cost_array = []
     weight_array=[]
     for epoch in range(epochs):
@@ -73,8 +75,8 @@ print("loss大小：",np.shape(cost_array))
 print("weight大小：",np.shape(weight_array))
 
 #尝试绘出图像
-show_multi_result(data,
+show_softmax_multi_result(data,
             label,
             cost_array,
             weight_array,
-            1000,3)
+            1000)
