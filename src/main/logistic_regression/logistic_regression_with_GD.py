@@ -1,84 +1,91 @@
-from read_data import read_data_from_resource
 import numpy as np
+from read_data import read_data_from_resource
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-from show_results import show_multi_result
+from show_results import show_binary_result
 
-def softmax(z):
-    log_c = np.max(z, axis = 1) * (-1)
-    log_c = log_c.reshape(-1, 1)
-    prob = np.exp(z + log_c)
-    prob = prob / np.exp(z + log_c).sum(axis = 1).reshape(-1, 1)
-    return np.clip(prob, 1e-15, 1-1e-15)
 
-#损失定义为交叉熵的均值
-def compute_cost(X, y, weight):
-    z=np.dot(X,weight)
-    activation = softmax(z)
-    cross_entropy = - np.sum(np.log(activation) * (y), axis = 1)
-    return np.mean(cross_entropy)
+def sigmoid(z):
+    return 1.0/(1+np.exp(-z))
 
-def one_hot_encoder(labels,m):
-    coder = np.zeros((m, 2))
+def loss_funtion(dataMat, classLabels, weights):
+    m, n = np.shape(dataMat)
+    loss = 0.0
     for i in range(m):
-        coder[i, labels[i]] = 1
-    return coder
+        sum_theta_x = 0.0
+        for j in range(n):
+            sum_theta_x += dataMat[i, j] * weights.T[0, j]
+        propability = sigmoid(sum_theta_x)
+        loss += -classLabels[i] * np.log(propability) - (1 - classLabels[i]) * np.log(1 - propability)
+    return loss*1.0/80.0
 
-def softmax_gradient_descent(X, y, epochs=1000, learning_rate=0.01):
-    weight = np.random.normal(loc=0, scale=0.01, size=(X.shape[1], 2))
-    cost_array = []
-    weight_array=[]
-    for epoch in range(epochs):
-        z = np.dot(X, weight)
-        activation = softmax(z)
-        diff = activation - y
-        grad = np.dot(X.T, diff)
-        weight -= learning_rate * grad
-        cost = compute_cost(X, y, weight)
-        cost_array.append(cost)
-        weight_array.append(np.array(weight).squeeze())
-    return np.array(weight[:,1]).squeeze(), cost_array,weight_array
+def gradAscent(dataMatIn, classLabels):
+    loss_array=[]
+    theta_array=[]
+    dataMatrix = np.mat(dataMatIn)
+    labelMat = np.mat(classLabels).transpose()
+    m,n = np.shape(dataMatrix)
+    alpha = 0.001
+    maxCycles = 10000
+    #weights=np.ones((n,1))  #0.41
+    #weights = np.random.normal(loc=0, scale=0.01, size=(n, 1)) #0.40
+    weights=np.zeros((n,1))#0.4073
+    for k in range(maxCycles):
+        h = sigmoid(dataMatrix*weights)
+        error = (labelMat - h)
+        weights = weights + alpha * dataMatrix.transpose() * error
+        loss=loss_funtion(dataMatrix,labelMat,weights)
+        loss_array.append(np.array(loss).squeeze())
+        theta_array.append(np.array(weights).squeeze())
+    return np.array(weights),loss,loss_array,theta_array
 
 
-#这里修改了: data.insert(0,1.0)
-data,label=read_data_from_resource()
-label=np.array(label)
+def plotBestFit(dataArr, labelMat, weights):
+    n = np.shape(dataArr)[0]
+    xcord1 = []
+    ycord1 = []
+    xcord2 = []
+    ycord2 = []
+    for i in range(n):
+        if int(labelMat[i]) == 1:
+            xcord1.append(dataArr[i, 1])
+            ycord1.append(dataArr[i, 2])
+        else:
+            xcord2.append(dataArr[i, 1])
+            ycord2.append(dataArr[i, 2])
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.scatter(xcord1, ycord1, s=30, c='red', marker='s')
+    ax.scatter(xcord2, ycord2, s=30, c='green')
+    x = np.arange(-0.1,1.0, 0.01)
+    y = (-weights[0] - weights[1] * x) / weights[2]
+    ax.plot(x, y)
+    plt.xlabel('X');
+    plt.ylabel('Y')
+    plt.show()
 
-
-
-#minmax正则化：否则数据不好收敛，到nan
-min1=np.min(data[:,1])
-max1=np.max(data[:,1])
-min2=np.min(data[:,2])
-max2=np.max(data[:,2])
-m,n=np.shape(data)
-
+dataMat, labelMat = read_data_from_resource()
+# minmax正则化：否则数据不好收敛，到nan
+min1 = np.min(dataMat[:, 1])
+max1 = np.max(dataMat[:, 1])
+min2 = np.min(dataMat[:, 2])
+max2 = np.max(dataMat[:, 2])
+m, n = np.shape(dataMat)
 for i in range(m):
-    data[i][1]=(data[i][1]-min1)/(max1-min1)
-    data[i][2]=(data[i][2]-min2)/(max2-min2)
+    dataMat[i][1] = (dataMat[i][1] - min1) / (max1 - min1)
+    dataMat[i][2] = (dataMat[i][2] - min2) / (max2 - min2)
+dataArr = np.array(dataMat)
+weights,losst,loss_array,theta_array = gradAscent(dataArr, labelMat)
+print(weights)
+print("loss:",losst)
+# 数据可视化
+plotBestFit(dataArr, labelMat, weights)
 
-labels=one_hot_encoder(label,m)
+print("loss:",loss_array)
+print("theta:",theta_array)
 
-learned_w, cost_array,weight_array= softmax_gradient_descent(data,labels)
-print("Learned weights:")
-print(learned_w)
-
-#用作测试数据正确
-plt.plot(range(len(cost_array)), cost_array)
-plt.xlabel("Epoch")
-plt.ylabel("Cost")
+plt.plot(loss_array)
 plt.show()
-
-#传出参数
-print("loss：",cost_array)
-print("weight：",weight_array)
-
-#参数尺度
-print("loss大小：",np.shape(cost_array))
-print("weight大小：",np.shape(weight_array))
-
-#尝试绘出图像
-show_multi_result(data,
-                label,
-                cost_array,
-                weight_array, 1000,2)
+show_binary_result(dataMat,
+            labelMat,
+            loss_array,
+            theta_array, 10000)
