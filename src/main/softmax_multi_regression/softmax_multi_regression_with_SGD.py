@@ -32,8 +32,8 @@ class SoftmaxClassifier:
     def fit(self, x, y, w=None, lr=0.01, epochs=1000, batch_size=1):
         if w is None:
             # w = np.zeros((x.shape[1], self.num_classes))
-            # w = np.ones((x.shape[1], self.num_classes))
-            w = np.random.normal(0, 1, (x.shape[1], self.num_classes))
+            w = np.ones((x.shape[1], self.num_classes))
+            # w = np.random.normal(0, 1, (x.shape[1], self.num_classes))
 
         # 记录初始状态
         self.w_list.append(w)
@@ -63,7 +63,7 @@ class SoftmaxClassifier:
 
 
 if __name__ == "__main__":
-    eopch = 100
+    eopch = 1000
     num_class = 3
     softmaxClassifier = SoftmaxClassifier(3)
     data = read_data_from_resource("dataset2")

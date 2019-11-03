@@ -28,8 +28,12 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
     fig.tight_layout(pad=4)
 
     # 直线分割图
-    ax[0].set_xlim(min(train_data[:, 1]) * 1.1, max(train_data[:, 1]) * 1.1)
-    ax[0].set_ylim(min(train_data[:, 2]) * 1.1, max(train_data[:, 2]) * 1.1)
+    min_train1 = min(train_data[:, 1])
+    max_train1 = max(train_data[:, 1])
+    min_train2 = min(train_data[:, 2])
+    max_train2 = max(train_data[:, 2])
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
     # ax[0].set_yticks(np.linspace(40, 90, 11))
     # ax[0].set_xticks(np.linspace(15, 65, 11))
     ax[0].set_title("Classify")
@@ -37,7 +41,7 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
     ax[0].set_ylabel("Exam 2 Score")
     ax[0].plot(train_data_zeros[:, 1], train_data_zeros[:, 2], 'bo', markersize=2)
     ax[0].plot(train_data_ones[:, 1], train_data_ones[:, 2], 'r+', markersize=3)
-    x = np.linspace(min(train_data[:, 1]), max(train_data[:, 1]), 11)
+    x = np.linspace(min_train1 - 0.2 * abs(min_train1), max_train1 + 0.2 * abs(max_train1), 11)
     logging.debug(x)
     line, = ax[0].plot(x, [np.nan] * len(x))
 
@@ -107,8 +111,12 @@ def show_softmax_binary_result(train_data, train_labels, error_list, theta_list,
     fig.tight_layout(pad=4)
 
     # 直线分割图
-    ax[0].set_xlim(min(train_data[:, 1]) * 1.1, max(train_data[:, 1]) * 1.1)
-    ax[0].set_ylim(min(train_data[:, 2]) * 1.1, max(train_data[:, 2]) * 1.1)
+    min_train1 = min(train_data[:, 1])
+    max_train1 = max(train_data[:, 1])
+    min_train2 = min(train_data[:, 2])
+    max_train2 = max(train_data[:, 2])
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
     ax[0].set_title("Classify")
     ax[0].set_xlabel("feature 1")
     ax[0].set_ylabel("feature 2 ")
@@ -116,7 +124,7 @@ def show_softmax_binary_result(train_data, train_labels, error_list, theta_list,
     ax[0].plot(train_data_ones[:, 1], train_data_ones[:, 2], 'r+', markersize=3)
     ax[0].plot(train_data_twos[:, 1], train_data_twos[:, 2], 'g^', markersize=3)
 
-    x = np.linspace(min(train_data[:, 1]), max(train_data[:, 1]), 11)
+    x = np.linspace(min_train1 - 0.2 * abs(min_train1), max_train1 + 0.2 * abs(max_train1), 11)
     print(x)
     line1, = ax[0].plot(x, [np.nan] * len(x))
 
@@ -193,17 +201,21 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
     fig.tight_layout(pad=4)
 
     # 直线分割图
-    ax[0].set_xlim(min(train_data[:, 1]) * 1.1, max(train_data[:, 1]) * 1.1)
-    ax[0].set_ylim(min(train_data[:, 2]) * 1.1, max(train_data[:, 2]) * 1.1)
+    min_train1 = min(train_data[:, 1])
+    max_train1 = max(train_data[:, 1])
+    min_train2 = min(train_data[:, 2])
+    max_train2 = max(train_data[:, 2])
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
     ax[0].set_title("Classify")
     ax[0].set_xlabel("feature 1")
     ax[0].set_ylabel("feature 2 ")
     ax[0].plot(train_data_zeros[:, 1], train_data_zeros[:, 2], 'bo', markersize=2)
     ax[0].plot(train_data_ones[:, 1], train_data_ones[:, 2], 'r+', markersize=3)
     ax[0].plot(train_data_twos[:, 1], train_data_twos[:, 2], 'g^', markersize=3)
-    x = np.linspace(min(train_data[:, 1]), max(train_data[:, 1]), 100)
+    x = np.linspace(min_train1 - 0.2 * abs(min_train1), max_train1 + 0.2 * abs(max_train1), 101)
 
-    fill_color = ['r', 'g', 'b']
+    fill_color = ['b', 'r', 'g']
     area_queue = Queue()
     for i in range(3):
         area_queue.put(ax[0].fill_between(x, [np.nan] * len(x), [np.nan] * len(x), color=fill_color[i], alpha=0.5))
@@ -295,17 +307,27 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
                     if line1[2] < 0:
                         y_low = [-np.exp(10)] * x.shape[0]
                         y_top = path1
-                y_top = y_top[line1[1] * x > -line1[0]]
-                y_low = y_low[line1[1] * x > -line1[0]]
-                new_x = x[line1[1] * x > -line1[0]]
-                area_queue.put(ax[0].fill_between(new_x, y_low, y_top, where=(y_low < y_top), color=fill_color[k], alpha=0.5))
+                new_y_top = []
+                new_y_low = []
+                new_x = []
+                for m in range(len(x)):
+                    if line1[1] * x[m] > -line1[0]:
+                        new_x.append(x[m])
+                        new_y_top.append(y_top[m])
+                        new_y_low.append(y_low[m])
+                area_queue.put(ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k], alpha=0.5))
             elif line0[2] == 0. and line1[2] == 0:
                 y_low = [-np.exp(10)] * x.shape[0]
                 y_top = [np.exp(10)] * x.shape[0]
-                y_low = y_low[line0[1] * x > 0 - line0[0] and line1[1] * x > 0 -line1[0]]
-                y_top = y_top[line0[1] * x > 0 - line0[0] and line1[1] * x > 0 -line1[0]]
-                new_x = x[line0[1] * x > 0 - line0[0] and line1[1] * x > 0 - line1[0]]
-                area_queue.put(ax[0].fill_between(new_x, y_low, y_top, where=(y_low < y_top), color=fill_color[k], alpha=0.5))
+                new_y_top = []
+                new_y_low = []
+                new_x = []
+                for m in range(len(x)):
+                    if line0[1] * x[m] + line0[0] > 0 and line1[1] * x[m] + line1[0] > 0:
+                        new_x.append(x[m])
+                        new_y_top.append(y_top[m])
+                        new_y_low.append(y_low[m])
+                area_queue.put(ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k], alpha=0.5))
             print(i)
         return error_line, area_queue
 
@@ -313,7 +335,7 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
         return -(theta0 / theta2) - (theta1 / theta2) * x1
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=1000, blit=False, repeat=False)
+        fig, animate, frames=iterator - 1, init_func=init, interval=10, blit=False, repeat=False)
     plt.show()
 
 
