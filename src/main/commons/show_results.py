@@ -92,7 +92,7 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
         return x_data, y_data
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=0.1, blit=False, repeat=False)
+        fig, animate, frames=int(iterator - 1), init_func=init, interval=0.1, blit=False, repeat=False)
     plt.show()
 
 
@@ -107,7 +107,6 @@ def show_softmax_binary_result(train_data, train_labels, error_list, theta_list,
     train_data_twos = train_data[train_labels == 2]
     error = []
     error_x = []
-    iterator = iterator / 10
     # 画布
     fig, ax = plt.subplots(1, 2, figsize=(10, 5))
     fig.tight_layout(pad=4)
@@ -145,7 +144,6 @@ def show_softmax_binary_result(train_data, train_labels, error_list, theta_list,
 
     def animate(i):
         # 更新error_line
-        i = i * 10
         xmin, xmax = ax[1].get_xlim()
         if i >= xmax - 5:
             ax[1].set_xlim(int(xmin), xmax + 10)
@@ -335,7 +333,7 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
         return -(theta0 / theta2) - (theta1 / theta2) * x1
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=0.1, blit=False, repeat=False)
+        fig, animate, frames=int(iterator - 1), init_func=init, interval=0.1, blit=False, repeat=False)
     plt.show()
 
 
