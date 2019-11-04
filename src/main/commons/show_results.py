@@ -23,7 +23,6 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
     error = []
     error_x = []
 
-
     # 画布
     fig, ax = plt.subplots(1, 2, figsize=(10, 5))
     fig.tight_layout(pad=4)
@@ -126,7 +125,6 @@ def show_softmax_binary_result(train_data, train_labels, error_list, theta_list,
     ax[0].plot(train_data_twos[:, 1], train_data_twos[:, 2], 'g^', markersize=3)
 
     x = np.linspace(min_train1 - 0.2 * abs(min_train1), max_train1 + 0.2 * abs(max_train1), 11)
-    print(x)
     line1, = ax[0].plot(x, [np.nan] * len(x))
 
     # 误差变化图
@@ -314,7 +312,9 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
                         new_x.append(x[m])
                         new_y_top.append(y_top[m])
                         new_y_low.append(y_low[m])
-                area_queue.put(ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k], alpha=0.5))
+                area_queue.put(
+                    ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k],
+                                       alpha=0.5))
             elif line0[2] == 0. and line1[2] == 0:
                 y_low = [-np.exp(10)] * x.shape[0]
                 y_top = [np.exp(10)] * x.shape[0]
@@ -326,7 +326,9 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
                         new_x.append(x[m])
                         new_y_top.append(y_top[m])
                         new_y_low.append(y_low[m])
-                area_queue.put(ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k], alpha=0.5))
+                area_queue.put(
+                    ax[0].fill_between(new_x, new_y_low, new_y_top, where=(new_y_low < new_y_top), color=fill_color[k],
+                                       alpha=0.5))
         return error_line, area_queue
 
     def f(x1, theta0, theta1, theta2):
@@ -335,37 +337,3 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
     ani = animation.FuncAnimation(
         fig, animate, frames=int(iterator - 1), init_func=init, interval=0.1, blit=False, repeat=False)
     plt.show()
-
-
-def test_show_multi_result():
-    show_softmax_multi_result(rd.read_data_from_resource("dataset2")[0],
-                              rd.read_data_from_resource("dataset2")[1],
-                              [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
-                              [[[-1 / 7, -2, 4.5],
-                                [-3, 1, 0],
-                                [0, 0, 0]],
-                               [[-1, -1, 1.8],
-                                [-0, 1.1, 0],
-                                [0, 1, 0]],
-                               [[-1, -1, 1.7],
-                                [-0, -1.2, 0],
-                                [-2, 1, 0]]
-                               ], 4)
-
-    # show_softmax_binary_result(rd.read_data_from_resource("dataset1")[0],
-    #                   rd.read_data_from_resource("dataset1")[1],
-    #                   [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
-    #                   [[[-1 / 7, -2],
-    #                     [-3, 1],
-    #                     [-3, 1]],
-    #                    [[-1, -1],
-    #                     [-0, 1.1],
-    #                     [-3, 1]],
-    #                    [[-1, -1],
-    #                     [-0, -1.2],
-    #                     [-2, 1]]
-    #                    ], 4)
-
-
-if __name__ == "__main__":
-    test_show_multi_result()

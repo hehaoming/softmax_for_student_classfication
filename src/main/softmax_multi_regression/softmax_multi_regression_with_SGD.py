@@ -57,13 +57,15 @@ class SoftmaxClassifier:
 
 
 if __name__ == "__main__":
-    eopch = 8000
+    eopch = 5000
     num_class = 3
     softmaxClassifier = SoftmaxClassifier(3)
     data = read_data_from_resource("dataset2")
-    # w = np.zeros((x.shape[1], self.num_classes))
-    # w = np.ones((x.shape[1], self.num_classes))
-    w = np.random.normal(0, 1, (data[0].shape[1], num_class))
+    w = np.zeros((data[0].shape[1], num_class))
+    # w = np.ones((data[0].shape[1], num_class))
+    # w = np.random.normal(0, 1, (data[0].shape[1], num_class))
     softmaxClassifier.fit(data[0], data[1], w=w, lr=0.05, epochs=eopch)
-    print(softmaxClassifier.score(data[0], data[1]))
+    print("weight:\n", softmaxClassifier.w)
+    print("cost:", softmaxClassifier.cost_list[-1])
+    print("acc:", softmaxClassifier.score(data[0], data[1]))
     show_softmax_multi_result(data[0], data[1], softmaxClassifier.cost_list, softmaxClassifier.w_list, eopch)
