@@ -25,7 +25,7 @@ def gradAscent(dataMatIn, classLabels):
     labelMat = np.mat(classLabels).transpose()
     m,n = np.shape(dataMatrix)
     alpha = 0.001
-    maxCycles = 10000
+    maxCycles = 5000
     #weights=np.ones((n,1))  #0.41
     #weights = np.random.normal(loc=0, scale=0.01, size=(n, 1)) #0.40
     weights=np.zeros((n,1))#0.4073
@@ -88,4 +88,4 @@ plt.show()
 show_binary_result(dataMat,
             labelMat,
             loss_array,
-            theta_array, 10000)
+            theta_array, 5000)
