@@ -2,7 +2,7 @@ from read_data import read_data_from_resource
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from show_results import show_multi_result
+from show_results import show_softmax_binary_result
 
 def softmax(z):
     log_c = np.max(z, axis = 1) * (-1)
@@ -78,7 +78,7 @@ print("loss大小：",np.shape(cost_array))
 print("weight大小：",np.shape(weight_array))
 
 #尝试绘出图像
-show_multi_result(data,
+show_softmax_binary_result(data,
                 label,
                 cost_array,
-                weight_array, 1000,2)
+                weight_array, 1000)
