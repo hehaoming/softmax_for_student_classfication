@@ -216,7 +216,7 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
     ax[0].plot(train_data_twos[:, 1], train_data_twos[:, 2], 'g^', markersize=3)
     x = np.linspace(min_train1 - 0.2 * abs(min_train1), max_train1 + 0.2 * abs(max_train1), 101)
 
-    fill_color = ['b', 'mistyrose', 'g']
+    fill_color = ['lightsteelblue', 'lightcoral', 'lightgreen']
     area_queue = Queue()
     for i in range(3):
         area_queue.put(ax[0].fill_between(x, [np.nan] * len(x), [np.nan] * len(x), color=fill_color[i], alpha=0.5))
