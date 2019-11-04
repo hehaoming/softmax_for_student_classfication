@@ -20,7 +20,7 @@ def loss_funtion(dataMat, classLabels, weights):
     return loss * 1.0 / 80.0
 
 
-def gradAscent(dataMatIn, classLabels):
+def gradDescent(dataMatIn, classLabels):
     loss_array = []
     theta_array = []
     dataMatrix = np.mat(dataMatIn)
@@ -33,8 +33,8 @@ def gradAscent(dataMatIn, classLabels):
     weights = np.zeros((n, 1))  # 0.4073
     for k in range(maxCycles):
         h = sigmoid(dataMatrix * weights)
-        error = (labelMat - h)
-        weights = weights + alpha * dataMatrix.transpose() * error
+        error = (h-labelMat)
+        weights = weights - alpha * dataMatrix.transpose() * error
         loss = loss_funtion(dataMatrix, labelMat, weights)
         loss_array.append(np.array(loss).squeeze())
         theta_array.append(np.array(weights).squeeze())
@@ -77,7 +77,7 @@ for i in range(m):
     dataMat[i][1] = (dataMat[i][1] - min1) / (max1 - min1)
     dataMat[i][2] = (dataMat[i][2] - min2) / (max2 - min2)
 dataArr = np.array(dataMat)
-weights, losst, loss_array, theta_array = gradAscent(dataArr, labelMat)
+weights, losst, loss_array, theta_array = gradDescent(dataArr, labelMat)
 print("weight:", weights)
 print("loss:", losst)
 # 数据可视化
