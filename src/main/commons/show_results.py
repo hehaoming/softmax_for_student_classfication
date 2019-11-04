@@ -92,7 +92,7 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
         return x_data, y_data
 
     ani = animation.FuncAnimation(
-        fig, animate, frames=iterator - 1, init_func=init, interval=1, blit=False, repeat=False)
+        fig, animate, frames=iterator - 1, init_func=init, interval=0.1, blit=False, repeat=False)
     plt.show()
 
 
