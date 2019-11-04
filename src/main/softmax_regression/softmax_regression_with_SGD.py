@@ -5,7 +5,6 @@ import read_data
 import show_results
 import utils
 
-
 def oneHotIt(y):
     K = 2
     eyes_mat = np.eye(K)  # 按分类数生成对角线为1的单位阵
@@ -14,22 +13,19 @@ def oneHotIt(y):
         y_onehot[i] = eyes_mat[y[i]]  # 根据每行y值，更新onehot编码矩阵
     return y_onehot
 
-
 def softmax(z):
     z -= np.max(z)
-    sm = (np.exp(z).T / np.sum(np.exp(z), axis=1)).T
+    sm = (np.exp(z).T / np.sum(np.exp(z),axis=1)).T
     return sm
 
-
-def getLoss(w, x, y):
-    m = x.shape[0]  # First we get the number of training examples
-    y_mat = oneHotIt(y)  # Next we convert the integer class coding into a one-hot representation
-    scores = np.dot(x, w)  # Then we compute raw class scores given our input and current weights
-    prob = softmax(scores)  # Next we perform a softmax on these scores to get their probabilities
-    loss = (-1 / m) * np.sum(y_mat * np.log(prob))  # We then find the loss of the probabilities
-    grad = (-1 / m) * np.dot(x.T, (y_mat - prob))  # And compute the gradient for that loss
-    return loss, grad
-
+def getLoss(w,x,y):
+    m = x.shape[0] #First we get the number of training examples
+    y_mat = oneHotIt(y) #Next we convert the integer class coding into a one-hot representation
+    scores = np.dot(x,w) #Then we compute raw class scores given our input and current weights
+    prob = softmax(scores) #Next we perform a softmax on these scores to get their probabilities
+    loss = (-1 / m) * np.sum(y_mat * np.log(prob)) #We then find the loss of the probabilities
+    grad = (-1 / m) * np.dot(x.T,(y_mat - prob)) #And compute the gradient for that loss
+    return loss,grad
 
 def softmaxRegressionSGD(x, y, iterations):
     # w = np.zeros([x.shape[1], len(np.unique(y))])
