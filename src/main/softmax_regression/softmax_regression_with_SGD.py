@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import read_data
 import show_results
+import utils
 
 def oneHotIt(y):
     K = 2
@@ -27,22 +28,20 @@ def getLoss(w,x,y):
     return loss,grad
 
 def softmaxRegressionSGD(x, y, iterations):
-    w = np.zeros([x.shape[1], len(np.unique(y))])
-    learningRate = 1e-5
+    # w = np.zeros([x.shape[1], len(np.unique(y))])
+    w = np.random.rand(x.shape[1], len(np.unique(y)))
+    learningRate = 0.0001
     losses = []
     thetaList = []
     for i in range(iterations):
-        idx = np.arange(x.shape[0])
-        np.random.shuffle(idx)
-        losses_per_epoch = []
-        for id in idx :
-            xx = np.reshape(x[id], (1, x.shape[1]))
-            yy = np.reshape(y[id], (1))
-            loss, grad = getLoss(w, xx, yy)
-            losses_per_epoch.append(loss)
-            w = w - (learningRate * grad)
-        losses.append(np.mean(losses_per_epoch))
+        id = np.random.randint(0, x.shape[0])
+        xx = np.reshape(x[id], (1, x.shape[1]))
+        yy = np.reshape(y[id], (1))
+        loss, grad = getLoss(w, xx, yy)
+        w = w - (learningRate * grad)
+        loss2, grad2 = getLoss(w, x, y)
         thetaList.append(w)
+        losses.append(loss2)
     return w, losses, thetaList
 
 def getProbsAndPreds(someX, w):
@@ -55,11 +54,24 @@ def getAccuracy(someX, someY, w):
     accuracy = sum(prede == someY)/(float(len(someY)))
     return accuracy
 
+def predict(x, w):
+    out = np.array([np.argmax(x) for x in softmax(x.dot(w))])
+    return out
+def score(x, y):
+    prediction = predict(x)
+    acc = 1 / len(y) * sum([(prediction[i] == y[i]) for i in range(len(y))])
+    return acc
 if __name__ == "__main__":
     x, y = read_data.read_data_from_resource()
-    w, losses, thetaList = softmaxRegressionSGD(x, y, 100000)
+    w, losses, thetaList = softmaxRegressionSGD(x, y, 400000)
     print('Training Accuracy: ', getAccuracy(x, y, w))
     plt.plot(losses)
     plt.legend()  # 将样例显示出来
     plt.show()
-    #show_results.show_result(train_data=x, train_labels=y,error_list= losses,theta_list= thetaList, iterator=1000)
+    # los2 = losses[:1000]
+    # the2 = thetaList[:1000]
+    # show_results.show_softmax_binary_result(train_data=x, train_labels=y,error_list= los2,theta_list= the2, iterator=1000)
+    los2 = losses[-1000:]
+    the2 = thetaList[-1000:]
+    show_results.show_softmax_binary_result(train_data=x, train_labels=y,error_list= los2,theta_list= the2, iterator=1000)
+    # show_results.show_softmax_binary_result(train_data=x, train_labels=y, error_list=losses, theta_list=thetaList, iterator=100000)
