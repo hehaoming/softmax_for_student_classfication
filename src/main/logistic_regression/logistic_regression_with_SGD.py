@@ -30,7 +30,10 @@ def h(x, w):
 def cost_and_grad(x, y, w, if_grad=True):
     grad = np.zeros(w.shape) * np.nan
     y_one_hot = np.zeros(2)
-    y_one_hot[y] = 1
+    print(y.shape)
+    y_one_hot[y] = one_hot_encoding(y, 2)
+    print(x)
+    print(w)
     front_f_x = np.dot(x, w)
     y_hat = sigmoid(front_f_x)
     h_x = np.concatenate((y_hat, 1 - y_hat), axis=-1)
@@ -40,19 +43,21 @@ def cost_and_grad(x, y, w, if_grad=True):
         # 平均梯度
         grad = - 1 / len(y) * np.dot(x.transpose(), y_one_hot - y_hat)
     return cost, grad
-# 随机梯度下降
-# 随机梯度下降每次更新权重只需要一个样本
+
+
 def stochastic_grad_descent(x, y, w=None, lr=0.001, epochs=1000):
     alpha = 0.001
     if w == None:
-        w = np.ones((x.shape[1], 1))
+        w = np.ones((3, 1))
     loss_list = []
     theta_list = []
     for iter in range(epochs):
         index = np.random.randint(1, x.shape[0])
-        w = w - lr * cost_and_grad(np.array(x[index]), np.array(y[index]), w)[1]
-        theta_list.append(w)
-        loss_list.append(cost_and_grad(x, y, w, False)[0])
+        # print(np.array([x[index]]))
+        # print(np.array([y[index]]))
+        w = w - lr * cost_and_grad(np.array([x[index]]), np.array(y[index]), w)[1]
+        # theta_list.append(w)
+        # loss_list.append(cost_and_grad(x, y, w, False)[0])
         # error = classLabels[i] - h
         # new_weights = weights + alpha * error * dataMatIn[i]
         # loss = loss_funtion(dataMatIn, classLabels, weights)
