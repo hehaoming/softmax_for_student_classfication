@@ -30,7 +30,7 @@ def getLoss(w,x,y):
 def softmaxRegressionSGD(x, y, iterations):
     # w = np.zeros([x.shape[1], len(np.unique(y))])
     w = np.random.rand(x.shape[1], len(np.unique(y)))
-    learningRate = 0.0001
+    learningRate = 0.03
     losses = []
     thetaList = []
     for i in range(iterations):
@@ -62,16 +62,26 @@ def score(x, y):
     acc = 1 / len(y) * sum([(prediction[i] == y[i]) for i in range(len(y))])
     return acc
 if __name__ == "__main__":
-    x, y = read_data.read_data_from_resource()
-    w, losses, thetaList = softmaxRegressionSGD(x, y, 400000)
-    print('Training Accuracy: ', getAccuracy(x, y, w))
-    plt.plot(losses)
-    plt.legend()  # 将样例显示出来
-    plt.show()
+    data, label = read_data.read_data_from_resource()
+    # minmax正则化：否则数据不好收敛，到nan
+    min1 = np.min(data[:, 1])
+    max1 = np.max(data[:, 1])
+    min2 = np.min(data[:, 2])
+    max2 = np.max(data[:, 2])
+    m, n = np.shape(data)
+    for i in range(m):
+        data[i][1] = (data[i][1] - min1) / (max1 - min1)
+        data[i][2] = (data[i][2] - min2) / (max2 - min2)
+
+    w, losses, thetaList = softmaxRegressionSGD(data, label, 5000)
+    print('Training Accuracy: ', getAccuracy(data, label, w))
+    # plt.plot(losses)
+    # plt.legend()  # 将样例显示出来
+    # plt.show()
     # los2 = losses[:1000]
     # the2 = thetaList[:1000]
     # show_results.show_softmax_binary_result(train_data=x, train_labels=y,error_list= los2,theta_list= the2, iterator=1000)
-    los2 = losses[-1000:]
-    the2 = thetaList[-1000:]
-    show_results.show_softmax_binary_result(train_data=x, train_labels=y,error_list= los2,theta_list= the2, iterator=1000)
-    # show_results.show_softmax_binary_result(train_data=x, train_labels=y, error_list=losses, theta_list=thetaList, iterator=100000)
+    # los2 = losses[-1000:]
+    # the2 = thetaList[-1000:]
+    # show_results.show_softmax_binary_result(train_data=data, train_labels=label,error_list= los2,theta_list= the2, iterator=1000)
+    show_results.show_softmax_binary_result(train_data=data, train_labels=label, error_list=losses, theta_list=thetaList, iterator=5000)
