@@ -9,7 +9,7 @@ import read_data as rd
 from queue import Queue
 import matplotlib
 
-matplotlib.use('TKAgg')
+# matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
@@ -32,8 +32,8 @@ def show_binary_result(train_data, train_labels, error_list, theta_list, iterato
     max_train1 = max(train_data[:, 1])
     min_train2 = min(train_data[:, 2])
     max_train2 = max(train_data[:, 2])
-    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
-    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1) - 0.02, max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2) - 0.02, max_train2 + 0.1 * abs(max_train2))
     # ax[0].set_yticks(np.linspace(40, 90, 11))
     # ax[0].set_xticks(np.linspace(15, 65, 11))
     ax[0].set_title("Classify")
@@ -115,8 +115,8 @@ def show_softmax_binary_result(train_data, train_labels, error_list, theta_list,
     max_train1 = max(train_data[:, 1])
     min_train2 = min(train_data[:, 2])
     max_train2 = max(train_data[:, 2])
-    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
-    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1) - 0.02, max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2) - 0.02, max_train2 + 0.1 * abs(max_train2))
     ax[0].set_title("Classify")
     ax[0].set_xlabel("feature 1")
     ax[0].set_ylabel("feature 2 ")
@@ -204,8 +204,8 @@ def show_softmax_multi_result(train_data, train_labels, error_list, theta_list, 
     max_train1 = max(train_data[:, 1])
     min_train2 = min(train_data[:, 2])
     max_train2 = max(train_data[:, 2])
-    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1), max_train1 + 0.1 * abs(max_train1))
-    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2), max_train2 + 0.1 * abs(max_train2))
+    ax[0].set_xlim(min_train1 - 0.1 * abs(min_train1) - 0.02, max_train1 + 0.1 * abs(max_train1))
+    ax[0].set_ylim(min_train2 - 0.1 * abs(min_train2) - 0.02, max_train2 + 0.1 * abs(max_train2))
     ax[0].set_title("Classify")
     ax[0].set_xlabel("feature 1")
     ax[0].set_ylabel("feature 2 ")

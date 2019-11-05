@@ -61,6 +61,14 @@ if __name__ == "__main__":
     num_class = 3
     softmaxClassifier = SoftmaxClassifier(3)
     data = read_data_from_resource("dataset2")
+    # min1 = np.min(data[0][:, 1])
+    # max1 = np.max(data[0][:, 1])
+    # min2 = np.min(data[0][:, 2])
+    # max2 = np.max(data[0][:, 2])
+    # m, n = np.shape(data[0])
+    # for i in range(m):
+    #     data[0][i][1] = (data[0][i][1] - min1) / (max1 - min1)
+    #     data[0][i][2] = (data[0][i][2] - min2) / (max2 - min2)
     w = np.zeros((data[0].shape[1], num_class))
     # w = np.ones((data[0].shape[1], num_class))
     # w = np.random.normal(0, 1, (data[0].shape[1], num_class))
